@@ -1,0 +1,381 @@
+/* --- Global & Container --- */
+:root {
+  --primary-color: #2563eb; /* Modern Blue */
+  --header-bg: #1e293b;     /* Slate Dark */
+  --header-text: #f8fafc;
+  --border-color: #e2e8f0;
+  --hover-bg: #f1f5f9;
+  --text-main: #334155;
+  --bg-app: #f8fafc;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  margin: 0;
+  padding: 20px;
+}
+
+.title {
+  text-align: center;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 25px;
+  font-size: 2rem;
+  letter-spacing: -0.5px;
+}
+
+.data-send {
+  background: rgb(196, 247, 196);
+  color: green;
+  font-size: 13px;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  text-align: center;
+  border: 1px solid rgb(170, 248, 170);
+  width: 10%;
+}
+.send-data {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* --- Save Button --- */
+.btn-save {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+  transition: all 0.2s ease;
+  margin-bottom: 20px;
+  display: block;
+  margin-left: auto; /* Aligns button to the right */
+}
+
+.btn-save:hover {
+  background-color: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 8px -1px rgba(37, 99, 235, 0.3);
+}
+
+/* --- Table Container --- */
+/* We add a wrapper in JS, but if not, this styles the table directly */
+table {
+  width: 100%;
+  border-collapse: separate; /* Allows for rounded corners */
+  border-spacing: 0;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden; /* Clips the corners */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  margin-bottom: 50px;
+}
+
+/* --- Header Styling --- */
+thead th {
+  background-color: var(--header-bg);
+  color: var(--header-text);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  padding: 10px;
+  border-right: 1px solid #334155;
+  border-bottom: 1px solid #334155;
+}
+
+thead th:first-child {
+  border-top-left-radius: 12px;
+}
+thead th:last-child {
+  border-top-right-radius: 12px;
+}
+
+/* Vertical Text Headers */
+.vertical-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  height: 85px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- Body Styling --- */
+td {
+  border-bottom: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  padding: 4px; /* Tight padding for inputs */
+  vertical-align: middle;
+  transition: background-color 0.15s ease;
+}
+
+/* Hover effect on rows */
+tbody tr:hover td {
+  background-color: #f8fafc;
+}
+
+/* 1. Group Name Column */
+.group-name {
+  background-color: #fff;
+  font-weight: 800;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  text-align: center;
+  border-right: 2px solid var(--border-color); /* Thicker separation */
+}
+
+
+/* 2. Row Label (Formateur/Module/Salle) */
+.row-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #64748b;
+  background-color: #f1f5f9;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  width: 80px;
+}
+
+/* 3. The MH (Module Hours) Column */
+.mh-cell {
+  background-color: #f8fafc;
+  color: #94a3b8;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* --- Input (Select) Styling --- */
+/* This makes the dropdowns look like custom UI elements */
+select {
+  width: 100%;
+  padding: 6px 4px;
+  border: 1px solid transparent; /* Invisible border by default */
+  border-radius: 6px;
+  background-color: transparent;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: #334155;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+  text-align: center;
+  text-align-last: center; /* Centers text in modern browsers */
+}
+
+/* Hover state for inputs */
+select:hover {
+  background-color: #e2e8f0;
+}
+
+/* Focus state (when clicking) */
+select:focus {
+  background-color: white;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* --- Conditional Cell Colors --- */
+/* Gray background for disabled/empty slots */
+td.gray-bg {
+  background-color: #f1f5f9; /* Light gray pattern */
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 5px,
+    #e2e8f0 5px,
+    #e2e8f0 10px
+  );
+}
+
+/* Optional: Highlight selected inputs */
+select:not([value=""]) {
+  font-weight: 600;
+}
+
+/* Specific text colors for filled inputs */
+td.teacher select:not([value=""]) { color: #0f172a; }
+td.module select:not([value=""]) { color: #2563eb; }
+td.room select:not([value=""]) { color: #dc2626; }
+select.selected {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: none;
+  background-color: transparent;
+  font-size: 15px;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  text-align-last: center;
+  cursor: pointer;
+  outline: none;
+  margin: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #97e7f5;
+  font-size: 11px;
+}
+
+/* Optional: Specific styling for Room Select when selected */
+.room-select.selected {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: none;
+  background-color: transparent;
+  font-size: 15px;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  text-align-last: center;
+  cursor: pointer;
+  outline: none;
+  margin: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #f5cbcb;
+  font-size: 11px;
+}
+
+/* Optional: Specific styling for Module Select when selected */
+.module-select.selected {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: none;
+  background-color: transparent;
+  font-size: 15px;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  text-align-last: center;
+  cursor: pointer;
+  outline: none;
+  margin: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #d6f1b5;
+  font-size: 12px;
+}
+/* --- LOGIN PAGE STYLES --- */
+/* ================= GLOBAL ================= */
+
+/* ================= CONTAINER ================= */
+.login-container {
+  min-height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ================= CARD ================= */
+.login-card {
+  background: linear-gradient(135deg, #1f2d3d, #233b53);
+  width: 380px;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  animation: fadeIn 0.4s ease-in-out;
+
+}
+
+/* ================= TITLES ================= */
+.login-title {
+  text-align: center;
+  margin-bottom: 5px;
+  color: white;
+  font-weight: 600;
+}
+
+.login-subtitle {
+  text-align: center;
+  font-size: 13px;
+  color: white;
+  margin-bottom: 24px;
+}
+
+/* ================= FORM ================= */
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13px;
+  color: white;
+  font-weight: 500;
+}
+
+.form-input {
+  width: 93%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  border: 1px solid #ccd1d9;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #1e88e5;
+  box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.15);
+}
+
+/* ================= BUTTON ================= */
+.btn-login {
+  width: 100%;
+  padding: 11px;
+  background: linear-gradient(135deg, #2b6cb0 0%, #38b2ac 100%);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.8s ease;
+}
+
+.btn-login:hover {
+  background: linear-gradient(135deg, #38b2ac 0%, #2b6cb0 100%)
+}
+
+/* ================= ERROR ================= */
+.error-msg {
+  background: #fdecea;
+  color: #c62828;
+  font-size: 13px;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+  text-align: center;
+  border: 1px solid #f5c6cb;
+}
+
+/* ================= ANIMATION ================= */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.last-planning {
+  padding: 100px;
+}

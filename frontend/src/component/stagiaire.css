@@ -1,0 +1,117 @@
+/* --- MODERN STAGIAIRE VIEW --- */
+.stagiaire-view {
+  font-family: 'Inter', 'Segoe UI', sans-serif;
+  padding: 40px;
+  background-color: #f1f5f9; /* Soft Slate Background */
+  min-height: 100vh;
+}
+
+.title {
+  text-align: center;
+  color: #1e293b;
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 30px;
+  letter-spacing: -0.5px;
+}
+
+/* --- TABLE CARD STYLE --- */
+table {
+  width: 100%;
+  border-collapse: separate; /* Required for rounded corners */
+  border-spacing: 0;
+  background: white;
+  border-radius: 16px; /* Modern rounded corners */
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e2e8f0;
+}
+
+/* --- HEADER --- */
+thead th {
+  background-color: #0f172a; /* Deep Navy */
+  color: #f8fafc;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  padding: 12px 5px;
+  border-bottom: 1px solid #334155;
+  border-right: 1px solid #1e293b;
+}
+
+.vertical-text {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.9;
+}
+
+/* --- BODY CELLS --- */
+td {
+  border-bottom: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
+  height: 45px; /* Comfortable height */
+  font-size: 0.9rem;
+  transition: background-color 0.2s;
+}
+
+/* --- GROUP & LABELS --- */
+.group-name {
+  background-color: #f8fafc;
+  color: #334155;
+  font-weight: 800;
+  font-size: 1.1rem;
+  border-right: 2px solid #cbd5e1; /* Clear separation */
+}
+
+.row-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #64748b;
+  background-color: #fff;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* --- DATA HIGHLIGHTS --- */
+.data-text {
+  display: block;
+  width: 100%;
+  font-weight: 600;
+}
+
+/* Distinct Colors for Readability */
+.teacher-text { color: #1e293b; } /* Dark for Name */
+.module-text  { color: #2563eb; } /* Bright Blue */
+.room-text    { color: #dc2626; } /* Alert Red */
+
+/* --- EMPTY / INACTIVE SLOTS --- */
+/* This makes empty slots look "disabled" so active classes pop out */
+td.gray-bg {
+  background-color: #f8fafc;
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 5px,
+    #f1f5f9 5px,
+    #f1f5f9 10px
+  );
+  color: #cbd5e1;
+}
+
+/* Hover Effect for Traceability */
+tbody tr:hover td {
+  background-color: #f1f5f9;
+}
+/* Keep group name solid on hover */
+tbody tr:hover td.group-name {
+  background-color: #e2e8f0;
+}

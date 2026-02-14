@@ -1,0 +1,13 @@
+# React
+frontend/node_modules/
+frontend/build/
+
+# PHP (if using composer later)
+backend/vendor/
+
+# Environment
+.env
+
+# OS
+.DS_Store
+Thumbs.db
