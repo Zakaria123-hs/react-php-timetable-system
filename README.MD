@@ -14,7 +14,6 @@ MySQL
 
 
 HTML / CSS
-
 ✅ Implemented Features
 
 Insert planning entries
@@ -27,8 +26,37 @@ Display timetable
 
 Conflict validation logic
 
+convert from fill excel or word to json
 🚧 In Progress
+
+validate max hours
 
 UI improvements
 
-convert from fill exel or word to json
+#####
+⚡ Performance Issue Identified
+
+After importing Excel files (converted to JSON), a large amount of data is stored in the database.
+
+The dashboard currently retrieves all records using unfiltered queries, which causes:
+
+Slow API response time
+
+Large JSON payload
+
+Slow rendering in React
+
+🛠 Planned Optimization
+
+Replace SELECT * with selective column queries
+
+Add filtering using WHERE conditions
+
+Implement pagination (LIMIT / OFFSET)
+
+Add database indexing on frequently filtered fields
+
+Reduce frontend rendering load
+
+Status: Scheduled for next iteration.
+#####

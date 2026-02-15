@@ -4,12 +4,9 @@ function FormateurSelect({
     groupId, day, slotId, planning, setPlanning, formateurs, occupiedFormateurs
 }) {
     const selectedValue = planning[groupId]?.[day]?.[slotId]?.formateur || "";
-    // console.log("#".repeat(10))
-    // console.log('this for planning',planning)
-    // console.log('this for formateurs',formateurs)
-    // console.log('this for groupr id ', groupId)
-    // console.log('this for day', day)
-    // console.log('this for slot id ', slotId )
+
+    // console.log(formateurs)
+    // console.log(selectedValue)
     const moduleSameSlot = planning[groupId]?.[day]?.[slotId]?.module || "";
     const handleChange = (e) => {
         const value = e.target.value;
@@ -54,7 +51,7 @@ function FormateurSelect({
                                     {f.nom} {isDisabled ? "(Occupied)" : ""}
                                 </option>
                             );
-                        }else{
+                        } else {
                             return null
                         }
                     }) :

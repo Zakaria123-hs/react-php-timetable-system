@@ -1,8 +1,9 @@
-import React, { use, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../App.css';
 import FormateurSelect from './FormateurSelected';
 import SalleSelect from './SalleSelect';
 import ModuleSelect from './ModuleSelect';
+import ImportData from './ImportData';
 
 // ... imports ...
 
@@ -21,10 +22,9 @@ function Dashbord() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const listRes = await fetch('http://localhost/php/time_tableV2.php/backend/fetch_data.php');
+                const listRes = await fetch('http://localhost/php/time_table.php/backend/fetch_data.php');
                 const listData = await listRes.json();
                 setData(listData);
-                
                 setLoading(false);
             } catch (error) {
                 console.error('Error:', error);
@@ -44,7 +44,7 @@ function Dashbord() {
             // Determine mode based on our state
             const currentMode = isUpdateMode ? 'update' : 'create';
 
-            const response = await fetch("http://localhost/php/time_tableV2.php/backend/insert-planning.php", {
+            const response = await fetch("http://localhost/php/time_table.php/backend/insert-planning.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 // SEND BOTH PLANNING AND MODE
@@ -74,7 +74,7 @@ function Dashbord() {
 
     const ActiveModify = async () => {
         // Fetch Existing Planning
-        const planRes = await fetch('http://localhost/php/time_tableV2.php/backend/select_planning.php');
+        const planRes = await fetch('http://localhost/php/time_table.php/backend/select_planning.php');
         const planResult = await planRes.json();
 
         if (planResult && planResult.data) {
@@ -258,6 +258,20 @@ function Dashbord() {
                 </table>
             </div>
             <button className='btn-save' onClick={ActiveModify} >modify last planning</button>
+
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <ImportData/>
         </>
     );
 }

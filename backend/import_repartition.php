@@ -1,0 +1,89 @@
+<?php
+// 1. Allow CORS (So React can talk to PHP)
+header("Access-Control-Allow-Origin: http://localhost:3000"); 
+header("Access-Control-Allow-Methods: POST, OPTIONS");
+header("Access-Control-Allow-Headers: Content-Type");
+header("Content-Type: application/json");
+
+// Handle Browser Pre-flight Request
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { exit(0); }
+
+require "db.php"; 
+
+// 2. Get the JSON data sent from React
+$json = file_get_contents("php://input");
+$data = json_decode($json, true);
+
+if (!$data) {
+    echo json_encode(["status" => "error", "message" => "No data received"]);
+    exit;
+}
+
+try {
+    // Start Transaction (If one fails, everything is canceled to prevent corrupt data)
+    $data_b->beginTransaction();
+    $records_inserted = 0;
+
+    // ==========================================
+    // 1. INSERT GROUPES
+    // ==========================================
+    // Using INSERT IGNORE so if you upload the file twice, it won't duplicate existing groups
+    $stmt_groupe = $data_b->prepare("INSERT  INTO groupes (nom, niveau, filiere) VALUES (?, ?, ?)");
+    
+    foreach ($data['groupes'] as $g) {
+        $stmt_groupe->execute([
+            $g['nom'], 
+            $g['niveau'],
+            $g['filiere']
+        ]);
+        $records_inserted += $stmt_groupe->rowCount();
+    }
+
+    // ==========================================
+    // 2. INSERT MODULES
+    // ==========================================
+    $stmt_module = $data_b->prepare("INSERT INTO modules (nom, filiere, heures_totales, type) VALUES (?, ?, ?, ?)");
+    
+    foreach ($data['modules'] as $m) {
+        $stmt_module->execute([
+            $m['nom'], 
+            $m['filiere'],
+            $m['heures_totale'], 
+            $m['type']
+        ]);
+        $records_inserted += $stmt_module->rowCount();
+    }
+
+    // ==========================================
+    // 3. INSERT FORMATEURS
+    // ==========================================
+    $stmt_formateur = $data_b->prepare("INSERT INTO formateurs (nom, his_module, max_heures) VALUES (?, ?, ?)");
+    
+    foreach ($data['formateurs'] as $f) {
+        // Convert the array of modules (e.g. ["React", "PHP"]) into a JSON string for the DB
+        $modules_json = json_encode($f['his_module'], JSON_UNESCAPED_UNICODE); 
+        
+        $stmt_formateur->execute([
+            $f['nom'], 
+            $modules_json, 
+            $f['max_heures']
+        ]);
+        $records_inserted += $stmt_formateur->rowCount();
+    }
+
+    // Save all changes
+    $data_b->commit();
+
+    // Send success response back to React
+    echo json_encode([
+        "status" => "success", 
+        "inserted" => $records_inserted
+    ]);
+
+} catch (Exception $e) {
+    // If error, undo all changes
+    $data_b->rollBack();
+    http_response_code(500);
+    echo json_encode(["status" => "error", "message" => $e->getMessage()]);
+}
+?>
