@@ -27,7 +27,13 @@ Display timetable
 Conflict validation logic
 
 convert from fill excel or word to json
+
+ Performance Issue Identified 50%(not complete)
+
+
 🚧 In Progress
+
+fix time table of stagiare 
 
 validate max hours
 

@@ -10,11 +10,11 @@ function Stagiaire() {
         const fetchAllData = async () => {
             try {
                 // 1. Fetch Structure
-                const structResponse = await fetch('http://localhost/php/time_tableV2.php/backend/fetch_data.php');
+                const structResponse = await fetch('http://localhost/php/time_table.php/backend/fetch_data.php');
                 const structData = await structResponse.json();
 
                 // 2. Fetch Planning
-                const planResponse = await fetch('http://localhost/php/time_tableV2.php/backend/select_planning.php');
+                const planResponse = await fetch('http://localhost/php/time_table.php/backend/select_planning.php');
                 const planResult = await planResponse.json();
 
                 setData(structData);
@@ -39,7 +39,7 @@ function Stagiaire() {
 
     // Helper to check if data exists
     const hasData = (val) => val && val !== "-" && val !== "";
-
+    console.log(data)
     return (
         <div className="stagiaire-view">
             <h2 className="title">Emploi du Temps</h2>
@@ -71,7 +71,9 @@ function Stagiaire() {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.groupes.map(group => (
+                    {
+                    data&&
+                    data.groupes.map(group => (
                         <React.Fragment key={group.id}>
                             {/* --- ROW 1: FORMATEUR --- */}
                             <tr>

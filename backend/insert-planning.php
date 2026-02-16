@@ -44,7 +44,7 @@ try {
     // MODE 2: UPDATE (Correction) - REFUND THEN REDUCE
     // =========================================================
     else {
-  £      // 1. Get the Old Data to Refund it
+        // 1. Get the Old Data to Refund it
         $stmt = $data_b->prepare("SELECT id, data FROM planning ORDER BY id DESC LIMIT 1");
         $stmt->execute();
         $old_row = $stmt->fetch(PDO::FETCH_ASSOC);

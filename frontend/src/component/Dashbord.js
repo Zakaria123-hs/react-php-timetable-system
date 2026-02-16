@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import '../App.css';
 import FormateurSelect from './FormateurSelected';
 import SalleSelect from './SalleSelect';
@@ -8,10 +8,11 @@ import ImportData from './ImportData';
 // ... imports ...
 
 function Dashbord() {
+    const [filiere, setFiliere] = useState();
     // that will store planing after every time we select from table 
     const [planning, setPlanning] = useState({});
     // this data we fetch from backend and containt nested object {formateure,group,modules,salls}
-    const [data, setData] = useState(null); 
+    const [data, setData] = useState(null);
 
     const [loading, setLoading] = useState(true);
     const [dataValid, setValid] = useState(false);
@@ -19,20 +20,22 @@ function Dashbord() {
     // this is fro Track if we are creating or updating
     const [isUpdateMode, setIsUpdateMode] = useState(false);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const listRes = await fetch('http://localhost/php/time_table.php/backend/fetch_data.php');
-                const listData = await listRes.json();
-                setData(listData);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error:', error);
-                setLoading(false);
-            }
-        };
-        fetchData();
-    }, []);
+    const fetchData = async () => {
+        try {
+            const listRes = await fetch('http://localhost/php/time_table.php/backend/fetch_data.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({filiere})
+            });
+            const listData = await listRes.json();
+            console.log(listData)
+            setData(listData);
+            setLoading(false);
+        } catch (error) {
+            console.error('Error:', error);
+            setLoading(false);
+        }
+    };
 
     // useEffect(() => {
     //     console.log(planning)
@@ -78,20 +81,20 @@ function Dashbord() {
         const planResult = await planRes.json();
 
         if (planResult && planResult.data) {
-            const savedPlan = typeof planResult.data === 'string' 
-                ? JSON.parse(planResult.data) 
+            const savedPlan = typeof planResult.data === 'string'
+                ? JSON.parse(planResult.data)
                 : planResult.data;
             setPlanning(savedPlan);
 
             // IF WE FOUND DATA, WE ARE IN UPDATE MODE
-            setIsUpdateMode(true); 
+            setIsUpdateMode(true);
         }
     }
 
     // ... rest of your JSX (render) ...
 
-    if (loading) return <div>Loading...</div>;
-    if (!data) return <div>No data available</div>;
+    // if (loading) return <div>Loading...</div>;
+    // if (!data) return <div>No data available</div>;
 
     // --- CONFLICT CHECKERS ---
     const getOccupiedFormateurs = (day, slotId, currentGroupId, currentRoom) => {
@@ -143,6 +146,23 @@ function Dashbord() {
                 {dataValid && <span style={{ color: 'green', fontWeight: 'bold' }}>Data Saved Successfully!</span>}
                 <button onClick={sendPlanningToBackend} className='btn-save'>Save Planning</button>
             </div>
+            <label htmlFor="filiereSelect">Choisissez une filière:</label>
+            <select name="filiere" id="filiereSelect" style={{ width: '100px' }} onChange={(e) => { setFiliere(e.target.value) }}>
+                <option value="">-- Sélectionnez une option --</option>
+                <option value="Développement Digital">Développement Digital</option>
+                <option value="Gestion des Entreprises">Gestion des Entreprises</option>
+                <option value="Technicien Spécialisé en Météo">Technicien Spécialisé en Météo</option>
+                <option value="Gestion des Entreprises option">Gestion des Entreprises option</option>
+                <option value="Développement Digital option W">Développement Digital option W</option>
+                <option value="Infrastructure Digitale option">Infrastructure Digitale option</option>
+                <option value="Infrastructure Digitale">Infrastructure Digitale</option>
+                <option value="Certification Microsoft Office">Certification Microsoft Office</option>
+                <option value="Assistant Administratif option">Assistant Administratif option</option>
+            </select>
+            <button style={{ padding: '6px 12px', marginLeft: '15px', }} onClick={fetchData}>valide</button>
+            <br />
+            <br />
+            <br />
             <div className="table-container">
                 <table>
                     <thead>
@@ -172,106 +192,109 @@ function Dashbord() {
                         </tr>
                     </thead>
                     <tbody>
-                        {data.groupes.map(group => ( 
-                            <React.Fragment key={group.id}>
-                                {/* ROW 1: TEACHER */}
-                                <tr>
-                                    <td rowSpan="3" className="group-name">{group.nom}</td>
-                                    <td className="row-label">Formateur</td>
 
-                                    {['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'].map(day => (
-                                        <React.Fragment key={day}>
-                                            {['S1', 'S2', 'S3', 'S4'].map((slot, index) => {
-                                                const cellClass = (index < 2) ? "teacher" : "gray-bg";
-                                                
-                                                // 1. GET CURRENT ROOM FOR THIS SLOT
-                                                const currentRoom = planning[group.id]?.[day]?.[slot]?.salle;
+                        {
+                            data &&
+                            data.groupes.map(group => (
+                                <React.Fragment key={group.id}>
+                                    {/* ROW 1: TEACHER */}
+                                    <tr>
+                                        <td rowSpan="3" className="group-name">{group.nom}</td>
+                                        <td className="row-label">Formateur</td>
 
-                                                // 2. PASS CURRENT ROOM TO CHECKER
-                                                const occupiedList = getOccupiedFormateurs(day, slot, group.id, currentRoom);
+                                        {['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'].map(day => (
+                                            <React.Fragment key={day}>
+                                                {['S1', 'S2', 'S3', 'S4'].map((slot, index) => {
+                                                    const cellClass = (index < 2) ? "teacher" : "gray-bg";
 
-                                                return (
-                                                    <td className={cellClass} key={slot}>
-                                                        <FormateurSelect
-                                                            groupId={group.id}
-                                                            day={day}
-                                                            slotId={slot}
-                                                            planning={planning}
-                                                            setPlanning={setPlanning}
-                                                            formateurs={data.formateurs}
-                                                            occupiedFormateurs={occupiedList}
-                                                        />
-                                                    </td>
-                                                );
-                                            })}
-                                        </React.Fragment>
-                                    ))}
-                                </tr>
-                                {/* ROW 2: MODULE consol */}
-                                <tr>
-                                    <td className="row-label">Module</td>
-                                    {['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'].map(day => (
-                                        <React.Fragment key={day}>
-                                            {['S1', 'S2', 'S3', 'S4'].map((slot, index) => {
-                                                const cellClass = (index < 2) ? "module" : "gray-bg";
-                                                return (
-                                                    <td className={cellClass} key={slot}>
-                                                        <ModuleSelect
-                                                            groupId={group.id} day={day} slotId={slot}
-                                                            planning={planning} setPlanning={setPlanning}
-                                                            modules={data.modules}
-                                                        />
-                                                    </td>
-                                                );
-                                            })}
-                                        </React.Fragment>
-                                    ))}
-                                </tr>
-                                {/* ROW 3: SALLE */}
-                                <tr>
-                                    <td className="row-label">Salle</td>
-                                    {['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'].map(day => (
-                                        <React.Fragment key={day}>
-                                            {['S1', 'S2', 'S3', 'S4'].map((slot, index) => {
-                                                const cellClass = (index < 2) ? "room" : "gray-bg";
-                                                const occupiedRooms = getOccupiedSalles(day, slot, group.id);
-                                                return (
-                                                    <td className={cellClass} key={slot}>
-                                                        <SalleSelect
-                                                            groupId={group.id}
-                                                            day={day}
-                                                            slotId={slot}
-                                                            planning={planning}
-                                                            setPlanning={setPlanning}
-                                                            salles={data.salles}
-                                                            occupiedSalles={occupiedRooms}
-                                                        />
-                                                    </td>
-                                                );
-                                            })}
-                                        </React.Fragment>
-                                    ))}
-                                </tr>
-                            </React.Fragment>
-                        ))}
+                                                    // 1. GET CURRENT ROOM FOR THIS SLOT
+                                                    const currentRoom = planning[group.id]?.[day]?.[slot]?.salle;
+
+                                                    // 2. PASS CURRENT ROOM TO CHECKER
+                                                    const occupiedList = getOccupiedFormateurs(day, slot, group.id, currentRoom);
+
+                                                    return (
+                                                        <td className={cellClass} key={slot}>
+                                                            <FormateurSelect
+                                                                groupId={group.id}
+                                                                day={day}
+                                                                slotId={slot}
+                                                                planning={planning}
+                                                                setPlanning={setPlanning}
+                                                                formateurs={data.formateurs}
+                                                                occupiedFormateurs={occupiedList}
+                                                            />
+                                                        </td>
+                                                    );
+                                                })}
+                                            </React.Fragment>
+                                        ))}
+                                    </tr>
+                                    {/* ROW 2: MODULE consol */}
+                                    <tr>
+                                        <td className="row-label">Module</td>
+                                        {['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'].map(day => (
+                                            <React.Fragment key={day}>
+                                                {['S1', 'S2', 'S3', 'S4'].map((slot, index) => {
+                                                    const cellClass = (index < 2) ? "module" : "gray-bg";
+                                                    return (
+                                                        <td className={cellClass} key={slot}>
+                                                            <ModuleSelect
+                                                                groupId={group.id} day={day} slotId={slot}
+                                                                planning={planning} setPlanning={setPlanning}
+                                                                modules={data.modules}
+                                                            />
+                                                        </td>
+                                                    );
+                                                })}
+                                            </React.Fragment>
+                                        ))}
+                                    </tr>
+                                    {/* ROW 3: SALLE */}
+                                    <tr>
+                                        <td className="row-label">Salle</td>
+                                        {['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'].map(day => (
+                                            <React.Fragment key={day}>
+                                                {['S1', 'S2', 'S3', 'S4'].map((slot, index) => {
+                                                    const cellClass = (index < 2) ? "room" : "gray-bg";
+                                                    const occupiedRooms = getOccupiedSalles(day, slot, group.id);
+                                                    return (
+                                                        <td className={cellClass} key={slot}>
+                                                            <SalleSelect
+                                                                groupId={group.id}
+                                                                day={day}
+                                                                slotId={slot}
+                                                                planning={planning}
+                                                                setPlanning={setPlanning}
+                                                                salles={data.salles}
+                                                                occupiedSalles={occupiedRooms}
+                                                            />
+                                                        </td>
+                                                    );
+                                                })}
+                                            </React.Fragment>
+                                        ))}
+                                    </tr>
+                                </React.Fragment>
+                            ))}
                     </tbody>
                 </table>
             </div>
             <button className='btn-save' onClick={ActiveModify} >modify last planning</button>
 
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <br/>
-            <ImportData/>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <ImportData />
         </>
     );
 }

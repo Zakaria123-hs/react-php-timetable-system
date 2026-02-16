@@ -64,7 +64,7 @@ function ImportData() {
     const processAndSendData = async (rows) => {
         const groupesMap = {}; 
         const modulesMap = {}; 
-        const formateursMap = {}; 
+        const formateursMap = {}; // We will make this hold more than just modules now
 
         rows.forEach(rawRow => {
             // Trim spaces from headers just in case
@@ -80,11 +80,9 @@ function ImportData() {
             const filiere = row['filière'] || row['Filière'] || row['filiere'] || "";
             const anneeFormation = row['Année de formation'] || row['Annee de formation'] || "";
 
-            // --- NEW: DYNAMIC MODULE TYPE (EFM vs EFMR) ---
             const isRegional = row['Régional'] || row['Regional'] || 'N';
             const moduleType = isRegional.trim().toUpperCase() === 'O' ? 'EFMR' : 'EFM';
 
-            // Extract Hours
             let heures = 0;
             const hoursKey = Object.keys(row).find(k => k && k.toUpperCase().includes('MH TOTALE'));
             if (hoursKey) {
@@ -100,41 +98,51 @@ function ImportData() {
                 };
             }
 
-            // --- EXTRACT MODULES (Now with dynamic EFMR/EFM) ---
+            // --- EXTRACT MODULES ---
             if (moduleName) {
                 if (!modulesMap[moduleName]) {
                     modulesMap[moduleName] = { 
                         nom: moduleName, 
                         heures_totale: heures, 
-                        type: moduleType, // Uses the 'O' / 'N' logic here!
+                        type: moduleType,
                         filiere: filiere
                     };
                 } else if (moduleType === 'EFMR') {
-                    // Safety check: If a module appears multiple times and ONE of them says 'O', 
-                    // we upgrade the whole module to EFMR just to be safe.
                     modulesMap[moduleName].type = 'EFMR';
                 }
             }
 
-            // --- EXTRACT TEACHERS ---
-            if (formateurName && moduleName) {
+            // --- EXTRACT TEACHERS (NOW WITH GROUPS AND FILIÈRES) ---
+            if (formateurName) {
+                // If this is the first time we see this teacher, create their storage
                 if (!formateursMap[formateurName]) {
-                    formateursMap[formateurName] = new Set();
+                    formateursMap[formateurName] = {
+                        modules: new Set(),
+                        groupes: new Set(),
+                        filieres: new Set()
+                    };
                 }
-                formateursMap[formateurName].add(moduleName);
+                
+                // Add the specific data from this row to the teacher's lists
+                if (moduleName) formateursMap[formateurName].modules.add(moduleName);
+                if (groupeName) formateursMap[formateurName].groupes.add(groupeName);
+                if (filiere) formateursMap[formateurName].filieres.add(filiere);
             }
         });
+        console.log("Groups Found:", groupesMap);
+        console.log("Teachers Found:", formateursMap);
+        console.log("Modules Found:", modulesMap);
 
-        // console.log("Groups Found:", groupesMap);
-        // console.log("Teachers Found:", formateursMap);
-        // console.log("Modules Found:", modulesMap);
-
+        // 3. Format the data for PHP
         const finalData = {
             groupes: Object.values(groupesMap), 
             modules: Object.values(modulesMap), 
             formateurs: Object.keys(formateursMap).map(nom => ({
                 nom: nom,
-                his_module: Array.from(formateursMap[nom]), 
+                // Convert all our Sets into standard Arrays for JSON
+                his_module: Array.from(formateursMap[nom].modules), 
+                his_group: Array.from(formateursMap[nom].groupes),
+                his_filiere: Array.from(formateursMap[nom].filieres),
                 max_heures: 30 
             }))
         };
