@@ -28,7 +28,7 @@ Conflict validation logic
 
 convert from fill excel or word to json
 
- Performance Issue Identified 50%(not complete)
+Performance Issue Identified 50%(not complete)
 
 
 🚧 In Progress
@@ -39,6 +39,7 @@ validate max hours
 
 UI improvements
 
+fixed my email config
 #####
 ⚡ Performance Issue Identified
 
