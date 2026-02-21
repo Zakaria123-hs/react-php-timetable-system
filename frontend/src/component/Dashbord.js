@@ -28,7 +28,7 @@ function Dashbord() {
                 body: JSON.stringify({filiere})
             });
             const listData = await listRes.json();
-            console.log(listData)
+            // console.log(listData)
             setData(listData);
             setLoading(false);
         } catch (error) {

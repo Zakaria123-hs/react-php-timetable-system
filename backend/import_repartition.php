@@ -20,10 +20,13 @@ try {
     $data_b->beginTransaction();
     $records_inserted = 0;
 
-    // 1. INSERT GROUPES
-    $stmt_groupe = $data_b->prepare("INSERT INTO groupes (nom, niveau, filiere) VALUES (?, ?, ?)");
+    // 1. INSERT GROUPES - FIXED: Added missing placeholder and json_encode for formateurs
+    $stmt_groupe = $data_b->prepare("INSERT INTO groupes (nom, niveau, filiere, his_formateur) VALUES (?, ?, ?, ?)");
     foreach ($data['groupes'] as $g) {
-        $stmt_groupe->execute([$g['nom'], $g['niveau'], $g['filiere']]);
+        // Convert the array of formateurs to a JSON string
+        $formateurs_json = json_encode($g['formateurs'], JSON_UNESCAPED_UNICODE);
+        
+        $stmt_groupe->execute([$g['nom'], $g['niveau'], $g['filiere'], $formateurs_json]);
         $records_inserted += $stmt_groupe->rowCount();
     }
 
@@ -34,11 +37,10 @@ try {
         $records_inserted += $stmt_module->rowCount();
     }
 
-    // 3. INSERT FORMATEURS (NOW SAVING MODULES, GROUPS, AND FILIERES)
+    // 3. INSERT FORMATEURS
     $stmt_formateur = $data_b->prepare("INSERT INTO formateurs (nom, his_module, his_group, his_filiere, max_heures) VALUES (?, ?, ?, ?, ?)");
     
     foreach ($data['formateurs'] as $f) {
-        // Encode all three arrays into JSON strings
         $modules_json = json_encode($f['his_module'], JSON_UNESCAPED_UNICODE); 
         $groups_json = json_encode($f['his_group'], JSON_UNESCAPED_UNICODE); 
         $filieres_json = json_encode($f['his_filiere'], JSON_UNESCAPED_UNICODE); 
@@ -57,7 +59,9 @@ try {
     echo json_encode(["status" => "success", "inserted" => $records_inserted]);
 
 } catch (Exception $e) {
-    $data_b->rollBack();
+    if ($data_b->inTransaction()) {
+        $data_b->rollBack();
+    }
     http_response_code(500);
     echo json_encode(["status" => "error", "message" => $e->getMessage()]);
 }
