@@ -4,9 +4,9 @@ function ModuleSelect({
     groupId, day, slotId, planning, setPlanning, modules 
 }) {
     const selectedValue = planning[groupId]?.[day]?.[slotId]?.module || "";
-    console.log(planning)
-    console.log(modules)
-    console.log(groupId)
+    // console.log(planning)
+    // console.log(modules)
+    // console.log(groupId)
     const handleChange = (e) => {
         const value = e.target.value;
         setPlanning(prev => ({

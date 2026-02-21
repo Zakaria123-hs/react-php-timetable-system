@@ -216,6 +216,7 @@ function Dashbord() {
                                                     return (
                                                         <td className={cellClass} key={slot}>
                                                             <FormateurSelect
+                                                                groupName={group.nom}
                                                                 groupId={group.id}
                                                                 day={day}
                                                                 slotId={slot}
