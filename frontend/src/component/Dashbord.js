@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import jsPDF from 'jspdf';
+
+// import ExportTimetableToPDF from './ExportTimetableToPDF';
 import '../App.css';
 import FormateurSelect from './FormateurSelected';
 import SalleSelect from './SalleSelect';
@@ -25,7 +28,7 @@ function Dashbord() {
             const listRes = await fetch('http://localhost/php/time_table.php/backend/fetch_data.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({filiere})
+                body: JSON.stringify({ filiere })
             });
             const listData = await listRes.json();
             // console.log(listData)
@@ -73,6 +76,7 @@ function Dashbord() {
             console.error("Error:", error);
         }
         setIsUpdateMode(false)
+        exportTimetablePDF(planning, data.groupes)
     };
 
     const ActiveModify = async () => {
@@ -138,6 +142,291 @@ function Dashbord() {
         return occupied;
     };
 
+    // const handleExportPDF = () => {
+    //     if (Object.keys(planning).length === 0) {
+    //         alert('Aucune donnée à exporter. Veuillez d\'abord créer un planning.');
+    //         return;
+    //     }
+    //     ExportTimetableToPDF(planning, data, filiere);
+    // };
+
+
+    /**
+     * Exports the timetable planning as a landscape A4 PDF.
+     * Visually replicates the Excel-style screenshot layout.
+     *
+     * @param {Object} planning  - planning[groupId][day][slot] = { formateur, module, salle }
+     * @param {Array}  groupes   - Array of group objects: [{ id, nom }, ...]
+     */
+    function exportTimetablePDF(planning, groupes) {
+        if (!groupes || groupes.length === 0) {
+            alert("Aucun groupe à exporter.");
+            return;
+        }
+        if (!planning || Object.keys(planning).length === 0) {
+            alert("Le planning est vide.");
+            return;
+        }
+        // ─── DOCUMENT SETUP ───────────────────────────────────────────────
+        const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+        const PAGE_W = 297;
+        const PAGE_H = 210;
+        const MARGIN = 4;
+
+        // ─── COLORS ───────────────────────────────────────────────────────
+        const COLOR_HEADER_BG = [41, 128, 185];   // blue
+        const COLOR_HEADER_TEXT = [255, 255, 255];   // white
+        const COLOR_GREEN_BG = [39, 174, 96];   // Teams green
+        const COLOR_GREEN_TEXT = [255, 255, 255];
+        const COLOR_GRAY_BG = [189, 195, 199];   // gray (S3/S4 disabled)
+        const COLOR_WHITE_BG = [255, 255, 255];
+        const COLOR_LABEL_BG = [236, 240, 241];   // light gray for row labels
+        const COLOR_GROUP_BG = [52, 73, 94];    // dark for group name
+        const COLOR_BORDER = [44, 62, 80];
+
+        // ─── LAYOUT MEASUREMENTS ──────────────────────────────────────────
+        const USABLE_W = PAGE_W - MARGIN * 2;
+
+        // Left fixed columns
+        const COL_GROUP_W = 18;   // "Groupe" column
+        const COL_TYPE_W = 14;   // "Type" column (Formateur/Module/Salle)
+        const LEFT_W = COL_GROUP_W + COL_TYPE_W;
+
+        // Days & slots
+        const DAYS = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+        const SLOTS = ['S1', 'S2', 'S3', 'S4'];
+        const TIMES = ['08:30', '11:00', '13:30', '16:00'];
+        const ROW_TYPES = ['FORMATEUR', 'MODULE', 'SALLE'];
+
+        const GRID_W = USABLE_W - LEFT_W;
+        const TOTAL_COLS = DAYS.length * SLOTS.length;   // 24
+        const SLOT_W = GRID_W / TOTAL_COLS;           // width of each slot cell
+
+        // Row heights
+        const ROW_H_HEADER1 = 7;    // "Lundi / Mardi …"
+        const ROW_H_HEADER2 = 6;    // "S1 S2 S3 S4"
+        const ROW_H_HEADER3 = 10;   // time labels (vertical)
+        const HEADER_H = ROW_H_HEADER1 + ROW_H_HEADER2 + ROW_H_HEADER3;
+        const ROW_H = 8;    // each data row (formateur / module / salle)
+        const GROUP_H = ROW_H * ROW_TYPES.length;
+
+        // ─── HELPERS ──────────────────────────────────────────────────────
+        const setFill = (rgb) => doc.setFillColor(rgb[0], rgb[1], rgb[2]);
+        const setStroke = (rgb) => doc.setDrawColor(rgb[0], rgb[1], rgb[2]);
+        const setTextC = (rgb) => doc.setTextColor(rgb[0], rgb[1], rgb[2]);
+
+        /**
+         * Draw a cell (filled rect + border + centered text with wrapping).
+         */
+        function drawCell(x, y, w, h, text, opts = {}) {
+            const {
+                fillColor = COLOR_WHITE_BG,
+                textColor = [30, 30, 30],
+                fontSize = 5.5,
+                bold = false,
+                align = 'center',
+                valign = 'middle',
+                padding = 1,
+                rotate = 0,         // degrees (90 for vertical text)
+            } = opts;
+
+            setFill(fillColor);
+            setStroke(COLOR_BORDER);
+            doc.setLineWidth(0.15);
+            doc.rect(x, y, w, h, 'FD');
+
+            if (!text) return;
+
+            doc.setFontSize(fontSize);
+            doc.setFont('helvetica', bold ? 'bold' : 'normal');
+            setTextC(textColor);
+
+            const str = String(text);
+
+            if (rotate !== 0) {
+                // Vertical text — rotate around cell center
+                const cx = x + w / 2;
+                const cy = y + h / 2;
+                doc.saveGraphicsState();
+                doc.text(str, cx, cy, {
+                    angle: rotate,
+                    align: 'center',
+                    baseline: 'middle',
+                });
+                doc.restoreGraphicsState();
+                return;
+            }
+
+            // Wrap text
+            const maxW = w - padding * 2;
+            const lines = doc.splitTextToSize(str, maxW);
+
+            const lineHeight = fontSize * 0.4;
+            const totalTextH = lines.length * lineHeight;
+
+            let ty;
+            if (valign === 'middle') ty = y + h / 2 - totalTextH / 2 + lineHeight / 2;
+            else if (valign === 'top') ty = y + padding + lineHeight / 2;
+            else ty = y + h - padding - totalTextH + lineHeight / 2;
+
+            lines.forEach((line, i) => {
+                let tx;
+                const lineW = doc.getTextWidth(line);
+                if (align === 'center') tx = x + w / 2 - lineW / 2;
+                else if (align === 'left') tx = x + padding;
+                else tx = x + w - padding - lineW;
+
+                doc.text(line, tx, ty + i * lineHeight);
+            });
+        }
+
+        // ─── PAGINATION LOGIC ─────────────────────────────────────────────
+        // How many groups fit per page?
+        const AVAIL_H = PAGE_H - MARGIN * 2 - HEADER_H;
+        const GROUPS_PER_PG = Math.max(1, Math.floor(AVAIL_H / GROUP_H));
+
+        // Split groupes into pages
+        const pages = [];
+        for (let i = 0; i < groupes.length; i += GROUPS_PER_PG) {
+            pages.push(groupes.slice(i, i + GROUPS_PER_PG));
+        }
+
+        // ─── RENDER EACH PAGE ─────────────────────────────────────────────
+        pages.forEach((pageGroups, pageIndex) => {
+            if (pageIndex > 0) doc.addPage();
+
+            const startX = MARGIN;
+            const startY = MARGIN;
+
+            // ── HEADER ROW 1: Title + Day names ──────────────────────────────
+            let y = startY;
+
+            // Top-left spanning cell (Group + Type labels header)
+            drawCell(startX, y, LEFT_W, HEADER_H, 'Groupe / Type', {
+                fillColor: COLOR_GROUP_BG,
+                textColor: COLOR_HEADER_TEXT,
+                fontSize: 6,
+                bold: true,
+            });
+
+            // Day headers (each spans 4 slots)
+            DAYS.forEach((day, di) => {
+                const x = startX + LEFT_W + di * SLOTS.length * SLOT_W;
+                const w = SLOTS.length * SLOT_W;
+                drawCell(x, y, w, ROW_H_HEADER1, day, {
+                    fillColor: COLOR_HEADER_BG,
+                    textColor: COLOR_HEADER_TEXT,
+                    fontSize: 6.5,
+                    bold: true,
+                });
+            });
+
+            // ── HEADER ROW 2: Slot names (S1–S4) ─────────────────────────────
+            y += ROW_H_HEADER1;
+            DAYS.forEach((_, di) => {
+                SLOTS.forEach((slot, si) => {
+                    const x = startX + LEFT_W + (di * SLOTS.length + si) * SLOT_W;
+                    drawCell(x, y, SLOT_W, ROW_H_HEADER2, slot, {
+                        fillColor: COLOR_HEADER_BG,
+                        textColor: COLOR_HEADER_TEXT,
+                        fontSize: 5.5,
+                        bold: true,
+                    });
+                });
+            });
+
+            // ── HEADER ROW 3: Time labels (vertical) ─────────────────────────
+            y += ROW_H_HEADER2;
+            DAYS.forEach((_, di) => {
+                SLOTS.forEach((_, si) => {
+                    const x = startX + LEFT_W + (di * SLOTS.length + si) * SLOT_W;
+                    drawCell(x, y, SLOT_W, ROW_H_HEADER3, TIMES[si], {
+                        fillColor: COLOR_HEADER_BG,
+                        textColor: COLOR_HEADER_TEXT,
+                        fontSize: 5,
+                        rotate: 90,
+                    });
+                });
+            });
+
+            // ── DATA ROWS ─────────────────────────────────────────────────────
+            y += ROW_H_HEADER3;
+
+            pageGroups.forEach((group) => {
+                const groupY = y;
+
+                // Group name cell (spans 3 rows)
+                drawCell(startX, groupY, COL_GROUP_W, GROUP_H, group.nom, {
+                    fillColor: COLOR_GROUP_BG,
+                    textColor: COLOR_HEADER_TEXT,
+                    fontSize: 5,
+                    bold: true,
+                });
+
+                ROW_TYPES.forEach((rowType, ri) => {
+                    const rowY = groupY + ri * ROW_H;
+
+                    // Row type label
+                    drawCell(startX + COL_GROUP_W, rowY, COL_TYPE_W, ROW_H, rowType, {
+                        fillColor: COLOR_LABEL_BG,
+                        textColor: [30, 30, 30],
+                        fontSize: 5,
+                        bold: false,
+                        align: 'left',
+                        padding: 1.5,
+                    });
+
+                    // Data cells
+                    DAYS.forEach((day, di) => {
+                        SLOTS.forEach((slot, si) => {
+                            const cellX = startX + LEFT_W + (di * SLOTS.length + si) * SLOT_W;
+                            const slotData = planning?.[group.id]?.[day]?.[slot] || {};
+
+                            const isGray = si >= 2 && !slotData.formateur && !slotData.module && !slotData.salle;
+
+                            let cellText = '';
+                            if (rowType === 'FORMATEUR') cellText = slotData.formateur || '';
+                            else if (rowType === 'MODULE') cellText = slotData.module || '';
+                            else if (rowType === 'SALLE') cellText = slotData.salle || '';
+
+                            const isTeams = slotData.salle === 'Teams';
+
+                            let fillColor = isGray ? COLOR_GRAY_BG : COLOR_WHITE_BG;
+                            let textColor = [30, 30, 30];
+                            if (isTeams) {
+                                fillColor = COLOR_GREEN_BG;
+                                textColor = COLOR_GREEN_TEXT;
+                            }
+
+                            drawCell(cellX, rowY, SLOT_W, ROW_H, cellText, {
+                                fillColor,
+                                textColor,
+                                fontSize: 5,
+                                align: 'center',
+                            });
+                        });
+                    });
+                });
+
+                y += GROUP_H;
+            });
+
+            // Page number footer
+            doc.setFontSize(7);
+            doc.setFont('helvetica', 'normal');
+            setTextC([100, 100, 100]);
+            doc.text(
+                `Page ${pageIndex + 1} / ${pages.length}`,
+                PAGE_W - MARGIN,
+                PAGE_H - 2,
+                { align: 'right' }
+            );
+        });
+
+        // ─── SAVE ─────────────────────────────────────────────────────────
+        doc.save('emploi_du_temps.pdf');
+    }
 
     return (
         <>
