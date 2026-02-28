@@ -28,7 +28,9 @@ Conflict validation logic
 
 convert from fill excel or word to json
 
-Performance Issue Identified 50%(not complete)
+I improved performance by filtering the selected data from the DB, restricting the module list to the selected group, and the teacher list to the selected module
+
+Performance Issue Identified 90%(not complete i need just to modify samethinge in react)
 
 
 🚧 In Progress
@@ -39,7 +41,6 @@ validate max hours
 
 UI improvements
 
-fixed my email config
 #####
 ⚡ Performance Issue Identified
 

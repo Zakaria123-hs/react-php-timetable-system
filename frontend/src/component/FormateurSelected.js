@@ -4,9 +4,9 @@ function FormateurSelect({
     groupId, day, slotId, planning, setPlanning, formateurs, occupiedFormateurs , groupName
 }) {
     const selectedValue = planning[groupId]?.[day]?.[slotId]?.formateur || "";
-    console.log(groupName)
-    console.log(formateurs)
-    console.log(planning)
+    // console.log(groupName)
+    // console.log(formateurs)
+    // console.log(planning)
     // console.log(selectedValue)
     const moduleSameSlot = planning[groupId]?.[day]?.[slotId]?.module || "";
     const handleChange = (e) => {
