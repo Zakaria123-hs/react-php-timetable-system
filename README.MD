@@ -33,38 +33,8 @@ I improved performance by filtering the selected data from the DB, restricting t
 Performance Issue Identified 90%(not complete i need just to modify samethinge in react)
 
 
-🚧 In Progress
-
-fix time table of stagiare 
+🚧 In Progress 
 
 validate max hours
 
 UI improvements
-
-#####
-⚡ Performance Issue Identified
-
-After importing Excel files (converted to JSON), a large amount of data is stored in the database.
-
-The dashboard currently retrieves all records using unfiltered queries, which causes:
-
-Slow API response time
-
-Large JSON payload
-
-Slow rendering in React
-
-🛠 Planned Optimization
-
-Replace SELECT * with selective column queries
-
-Add filtering using WHERE conditions
-
-Implement pagination (LIMIT / OFFSET)
-
-Add database indexing on frequently filtered fields
-
-Reduce frontend rendering load
-
-Status: Scheduled for next iteration.
-#####

@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import jsPDF from 'jspdf';
-
-// import ExportTimetableToPDF from './ExportTimetableToPDF';
 import '../App.css';
 import FormateurSelect from './FormateurSelected';
 import SalleSelect from './SalleSelect';
