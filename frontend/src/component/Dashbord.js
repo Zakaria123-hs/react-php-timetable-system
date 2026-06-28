@@ -22,8 +22,9 @@ function Dashbord() {
     const [isUpdateMode, setIsUpdateMode] = useState(false);
 
     const fetchData = async () => {
+        console.log(filiere)
         try {
-            const listRes = await fetch('http://localhost/php/time_table.php/backend/fetch_data.php', {
+            const listRes = await fetch('http://localhost:8000/fetch_data.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ filiere })
@@ -428,28 +429,55 @@ function Dashbord() {
 
     return (
         <>
-            <h2 className="title">Gestion Emploi du Temps</h2>
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 20px' }}>
-                {dataValid && <span style={{ color: 'green', fontWeight: 'bold' }}>Data Saved Successfully!</span>}
-                <button onClick={sendPlanningToBackend} className='btn-save'>Save Planning</button>
+        <div>
+            <div className="planning-header">
+                <h2 className="title">Gestion Emploi du Temps</h2>
+
+                <div className="actions">
+                    {dataValid && (
+                        <span className="success">
+                            ✓ Data Saved Successfully
+                        </span>
+                    )}
+
+                    <button
+                        onClick={sendPlanningToBackend}
+                        className="btn-save"
+                    >
+                        Save Planning
+                    </button>
+                </div>
             </div>
-            <label htmlFor="filiereSelect">Choisissez une filière:</label>
-            <select name="filiere" id="filiereSelect" style={{ width: '100px' }} onChange={(e) => { setFiliere(e.target.value) }}>
-                <option value="">-- Sélectionnez une option --</option>
-                <option value="Développement Digital">Développement Digital</option>
-                <option value="Gestion des Entreprises">Gestion des Entreprises</option>
-                <option value="Technicien Spécialisé en Météo">Technicien Spécialisé en Météo</option>
-                <option value="Gestion des Entreprises option">Gestion des Entreprises option</option>
-                <option value="Développement Digital option W">Développement Digital option W</option>
-                <option value="Infrastructure Digitale option">Infrastructure Digitale option</option>
-                <option value="Infrastructure Digitale">Infrastructure Digitale</option>
-                <option value="Certification Microsoft Office">Certification Microsoft Office</option>
-                <option value="Assistant Administratif option">Assistant Administratif option</option>
-            </select>
-            <button style={{ padding: '6px 12px', marginLeft: '15px', }} onClick={fetchData}>valide</button>
-            <br />
-            <br />
-            <br />
+                <div className="toolbar">
+
+                    <div className="select-box">
+                        <label htmlFor="filiereSelect">
+                            Filière
+                        </label>
+
+                        <select
+                            id="filiereSelect"
+                            onChange={(e)=>setFiliere(e.target.value)}
+                        >
+                            <option value="">-- Sélectionnez une option --</option>
+                            <option value="Développement Digital">Développement Digital</option>
+                            <option value="Gestion des Entreprises">Gestion des Entreprises</option>
+                            <option value="Technicien Spécialisé en Météo">Technicien Spécialisé en Météo</option>
+                            <option value="Gestion des Entreprises option">Gestion des Entreprises option</option>
+                            <option value="Développement Digital option W">Développement Digital option W</option>
+                            <option value="Infrastructure Digitale option">Infrastructure Digitale option</option>
+                            <option value="Infrastructure Digitale">Infrastructure Digitale</option>
+                            <option value="Certification Microsoft Office">Certification Microsoft Office</option>
+                            <option value="Assistant Administratif option">Assistant Administratif option</option>
+                        </select>
+                    </div>
+
+                    <button className="btn-validate" onClick={fetchData}>
+                        Charger
+                    </button>
+
+                </div>
+            
             <div className="table-container">
                 <table>
                     <thead>
@@ -568,7 +596,16 @@ function Dashbord() {
                     </tbody>
                 </table>
             </div>
-            <button className='btn-save' onClick={ActiveModify} >modify last planning</button>
+            <div className="bottom-buttons">
+                <button
+                    className="btn-save"
+                    onClick={ActiveModify}
+                >
+                    Modify Last Planning
+                </button>
+            </div>
+
+            </div>
 
             <br />
             <br />

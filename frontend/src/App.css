@@ -1,381 +1,556 @@
-
-:root {
-  --primary-color: #2563eb; /* Modern Blue */
-  --header-bg: #1e293b;     /* Slate Dark */
-  --header-text: #f8fafc;
-  --border-color: #e2e8f0;
-  --hover-bg: #f1f5f9;
-  --text-main: #334155;
-  --bg-app: #f8fafc;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
-body {
-  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--bg-app);
-  color: var(--text-main);
-  margin: 0;
-  padding: 20px;
+body{
+    background:#eef3f8;
+    font-family:Inter,sans-serif;
+    color:#2b3440;
 }
 
-.title {
-  text-align: center;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 25px;
-  font-size: 2rem;
-  letter-spacing: -0.5px;
+.planning-page{
+    padding:30px;
 }
 
-.data-send {
-  background: rgb(196, 247, 196);
-  color: green;
-  font-size: 13px;
-  padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 15px;
-  text-align: center;
-  border: 1px solid rgb(170, 248, 170);
-  width: 10%;
-}
-.send-data {
-  width: 100%;
-  display: flex;
-  justify-content: center;
+/* HEADER */
+
+.planning-header{
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+
+    margin-bottom:25px;
 }
 
-/* --- Save Button --- */
-.btn-save {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  padding: 10px 24px;
-  font-size: 14px;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
-  transition: all 0.2s ease;
-  margin-bottom: 20px;
-  display: block;
-  margin-left: auto; /* Aligns button to the right */
+.title{
+
+    font-size:32px;
+    font-weight:700;
+    color:#183153;
 }
 
-.btn-save:hover {
-  background-color: #1d4ed8;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 8px -1px rgba(37, 99, 235, 0.3);
+.actions{
+
+    display:flex;
+    align-items:center;
+    gap:15px;
 }
 
-/* --- Table Container --- */
-/* We add a wrapper in JS, but if not, this styles the table directly */
-table {
-  width: 100%;
-  border-collapse: separate; /* Allows for rounded corners */
-  border-spacing: 0;
-  background: white;
-  border-radius: 12px;
-  overflow: hidden; /* Clips the corners */
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  margin-bottom: 50px;
+.success{
+
+    color:#2e7d32;
+    font-weight:600;
+    background:#d9f8df;
+    padding:10px 18px;
+    border-radius:10px;
 }
 
-/* --- Header Styling --- */
-thead th {
-  background-color: var(--header-bg);
-  color: var(--header-text);
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
-  padding: 10px;
-  border-right: 1px solid #334155;
-  border-bottom: 1px solid #334155;
+/* TOOLBAR */
+
+.toolbar{
+
+    display:flex;
+    align-items:end;
+    gap:20px;
+
+    background:white;
+
+    padding:20px;
+
+    border-radius:15px;
+
+    box-shadow:
+    0 10px 25px rgba(0,0,0,.05);
+
+    margin-bottom:25px;
 }
 
-thead th:first-child {
-  border-top-left-radius: 12px;
-}
-thead th:last-child {
-  border-top-right-radius: 12px;
-}
+.select-box{
 
-/* Vertical Text Headers */
-.vertical-text {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  height: 85px;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
 }
 
-/* --- Body Styling --- */
-td {
-  border-bottom: 1px solid var(--border-color);
-  border-right: 1px solid var(--border-color);
-  padding: 4px; /* Tight padding for inputs */
-  vertical-align: middle;
-  transition: background-color 0.15s ease;
+.select-box label{
+
+    font-weight:600;
 }
 
-/* Hover effect on rows */
-tbody tr:hover td {
-  background-color: #f8fafc;
+select{
+
+    min-width:300px;
+
+    height:45px;
+
+    border-radius:10px;
+
+    border:1px solid #d4dce6;
+
+    padding:0 15px;
+
+    font-size:15px;
+
+    background:white;
+
+    outline:none;
+
+    transition:.3s;
 }
 
-/* 1. Group Name Column */
-.group-name {
-  background-color: #fff;
-  font-weight: 800;
-  color: var(--primary-color);
-  font-size: 0.9rem;
-  text-align: center;
-  border-right: 2px solid var(--border-color); /* Thicker separation */
+select:focus{
+
+    border-color:#2563eb;
+    box-shadow:0 0 0 3px rgba(37,99,235,.15);
 }
 
+/* BUTTONS */
 
-/* 2. Row Label (Formateur/Module/Salle) */
-.row-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: #64748b;
-  background-color: #f1f5f9;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  width: 80px;
+.btn-save,
+.btn-validate{
+
+    height:45px;
+
+    border:none;
+
+    border-radius:10px;
+
+    padding:0 25px;
+
+    color:white;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    font-weight:600;
+
+    transition:.3s;
 }
 
-/* 3. The MH (Module Hours) Column */
-.mh-cell {
-  background-color: #f8fafc;
-  color: #94a3b8;
-  font-weight: bold;
-  text-align: center;
+.btn-save{
+
+    background:#2563eb;
 }
 
-/* --- Input (Select) Styling --- */
-/* This makes the dropdowns look like custom UI elements */
-select {
-  width: 100%;
-  padding: 6px 4px;
-  border: 1px solid transparent; /* Invisible border by default */
-  border-radius: 6px;
-  background-color: transparent;
-  font-family: inherit;
-  font-size: 0.85rem;
-  color: #334155;
-  cursor: pointer;
-  outline: none;
-  transition: all 0.2s;
-  text-align: center;
-  text-align-last: center; /* Centers text in modern browsers */
+.btn-save:hover{
+
+    background:#1e4ed8;
+
+    transform:translateY(-2px);
 }
 
-/* Hover state for inputs */
-select:hover {
-  background-color: #e2e8f0;
+.btn-validate{
+
+    background:#14b86a;
 }
 
-/* Focus state (when clicking) */
-select:focus {
-  background-color: white;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+.btn-validate:hover{
+
+    background:#109357;
 }
 
-/* --- Conditional Cell Colors --- */
-/* Gray background for disabled/empty slots */
-td.gray-bg {
-  background-color: #f1f5f9; /* Light gray pattern */
-  background-image: repeating-linear-gradient(
-    45deg,
-    transparent,
-    transparent 5px,
-    #e2e8f0 5px,
-    #e2e8f0 10px
-  );
-}
+/* TABLE */
 
-/* Optional: Highlight selected inputs */
-select:not([value=""]) {
-  font-weight: 600;
-}
+.table-container{
 
-/* Specific text colors for filled inputs */
-td.teacher select:not([value=""]) { color: #0f172a; }
-td.module select:not([value=""]) { color: #2563eb; }
-td.room select:not([value=""]) { color: #dc2626; }
-select.selected {
-  width: 100%;
-  height: 100%;
-  display: block;
-  border: none;
-  background-color: transparent;
-  font-size: 15px;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  text-align-last: center;
-  cursor: pointer;
-  outline: none;
-  margin: 0;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-color: #97e7f5;
-  font-size: 11px;
-}
+    background:white;
 
-/* Optional: Specific styling for Room Select when selected */
-.room-select.selected {
-  width: 100%;
-  height: 100%;
-  display: block;
-  border: none;
-  background-color: transparent;
-  font-size: 15px;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  text-align-last: center;
-  cursor: pointer;
-  outline: none;
-  margin: 0;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-color: #f5cbcb;
-  font-size: 11px;
-}
+    border-radius:16px;
 
-/* Optional: Specific styling for Module Select when selected */
-.module-select.selected {
-  width: 100%;
-  height: 100%;
-  display: block;
-  border: none;
-  background-color: transparent;
-  font-size: 15px;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  text-align-last: center;
-  cursor: pointer;
-  outline: none;
-  margin: 0;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background-color: #d6f1b5;
-  font-size: 12px;
-}
-/* --- LOGIN PAGE STYLES --- */
-/* ================= GLOBAL ================= */
+    overflow:auto;
 
-/* ================= CONTAINER ================= */
-.login-container {
-  min-height: 100%;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+    max-height:75vh;
 
-/* ================= CARD ================= */
-.login-card {
-  background: linear-gradient(135deg, #1f2d3d, #233b53);
-  width: 380px;
-  padding: 32px;
-  border-radius: 12px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
-  animation: fadeIn 0.4s ease-in-out;
+    box-shadow:
+    0 15px 35px rgba(0,0,0,.05);
 
 }
 
-/* ================= TITLES ================= */
-.login-title {
-  text-align: center;
-  margin-bottom: 5px;
-  color: white;
-  font-weight: 600;
+/* SCROLL */
+
+.table-container::-webkit-scrollbar{
+
+    width:12px;
+    height:12px;
 }
 
-.login-subtitle {
-  text-align: center;
-  font-size: 13px;
-  color: white;
-  margin-bottom: 24px;
+.table-container::-webkit-scrollbar-thumb{
+
+    background:#c2ccd7;
+
+    border-radius:20px;
 }
 
-/* ================= FORM ================= */
-.form-group {
-  margin-bottom: 18px;
+.table-container::-webkit-scrollbar-track{
+
+    background:#edf2f7;
 }
 
-.form-label {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 13px;
-  color: white;
-  font-weight: 500;
+table{
+
+    border-collapse:collapse;
+
+    min-width:2400px;
+
+    width:max-content;
 }
 
-.form-input {
-  width: 93%;
-  padding: 10px 12px;
-  font-size: 14px;
-  border-radius: 6px;
-  border: 1px solid #ccd1d9;
-  transition: border-color 0.2s, box-shadow 0.2s;
+/* HEADER */
+
+thead th{
+
+    position:sticky;
+
+    top:0;
+
+    z-index:20;
+
+    background:#183153;
+
+    color:white;
+
+    padding:12px;
+
+    border:1px solid #2f4966;
+
+    text-align:center;
+
+    font-weight:600;
 }
 
-.form-input:focus {
-  outline: none;
-  border-color: #1e88e5;
-  box-shadow: 0 0 0 2px rgba(30, 136, 229, 0.15);
+thead tr:nth-child(2) th{
+
+    background:#24476f;
 }
 
-/* ================= BUTTON ================= */
-.btn-login {
-  width: 100%;
-  padding: 11px;
-  background: linear-gradient(135deg, #2b6cb0 0%, #38b2ac 100%);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.8s ease;
+thead tr:nth-child(3) th{
+
+    background:#2c5a8d;
 }
 
-.btn-login:hover {
-  background: linear-gradient(135deg, #38b2ac 0%, #2b6cb0 100%)
+/* BODY */
+
+tbody td{
+
+    border:1px solid #e6edf4;
+
+    padding:8px;
+
+    text-align:center;
+
+    background:white;
 }
 
-/* ================= ERROR ================= */
-.error-msg {
-  background: #fdecea;
-  color: #c62828;
-  font-size: 13px;
-  padding: 10px;
-  border-radius: 6px;
-  margin-bottom: 15px;
-  text-align: center;
-  border: 1px solid #f5c6cb;
+tbody tr:hover td{
+
+    background:#f8fbff;
 }
 
-/* ================= ANIMATION ================= */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* STICKY FIRST COLUMN */
+
+.group-name{
+
+    position:sticky;
+
+    left:0;
+
+    z-index:10;
+
+    background:#f3f7fc;
+
+    font-weight:700;
+
+    min-width:180px;
 }
 
-.last-planning {
-  padding: 100px;
+.row-label{
+
+    position:sticky;
+
+    left:180px;
+
+    z-index:10;
+
+    background:#f8fafc;
+
+    font-weight:600;
+
+    min-width:110px;
+}
+
+/* TOP LEFT */
+
+thead th:first-child{
+
+    left:0;
+
+    z-index:50;
+}
+
+/* COLORS */
+
+.teacher{
+
+    background:#fff9ec;
+}
+
+.module{
+
+    background:#edf8ff;
+}
+
+.room{
+
+    background:#eefcf5;
+}
+
+.gray-bg{
+
+    background:#f5f6f8;
+}
+
+/* SELECT INSIDE TABLE */
+
+table select{
+
+    width:100%;
+
+    min-width:0;
+
+    height:38px;
+
+    border-radius:8px;
+
+    font-size:13px;
+}
+
+/* VERTICAL TIME */
+
+.vertical-text{
+
+    writing-mode:vertical-rl;
+
+    transform:rotate(180deg);
+
+    margin:auto;
+
+    font-size:12px;
+
+    letter-spacing:1px;
+}
+
+/* FOOTER */
+
+.bottom-buttons{
+
+    margin-top:25px;
+
+    display:flex;
+
+    justify-content:flex-end;
+}
+
+.upload-card{
+
+    background:#fff;
+
+    border-radius:18px;
+
+    padding:30px;
+
+    box-shadow:
+    0 15px 35px rgba(15,23,42,.06);
+
+    border:1px solid #e2e8f0;
+
+    margin-top:30px;
+}
+
+/* HEADER */
+
+.upload-header{
+
+    display:flex;
+
+    gap:18px;
+
+    align-items:center;
+
+    margin-bottom:25px;
+}
+
+.upload-icon{
+
+    width:60px;
+
+    height:60px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:28px;
+
+    background:#eff6ff;
+
+    color:#2563eb;
+
+    border-radius:15px;
+}
+
+.upload-header h3{
+
+    margin:0;
+
+    font-size:22px;
+
+    color:#1e293b;
+}
+
+.upload-header p{
+
+    margin-top:6px;
+
+    color:#64748b;
+
+    line-height:1.5;
+}
+
+/* DROP AREA */
+
+.upload-area{
+
+    display:block;
+
+    cursor:pointer;
+}
+
+.upload-area input{
+
+    display:none;
+}
+
+.upload-content{
+
+    border:2px dashed #cbd5e1;
+
+    border-radius:16px;
+
+    padding:45px 20px;
+
+    text-align:center;
+
+    transition:.3s;
+
+    background:#fafcff;
+}
+
+.upload-area:hover .upload-content{
+
+    border-color:#2563eb;
+
+    background:#f4f8ff;
+}
+
+.upload-cloud{
+
+    font-size:50px;
+
+    margin-bottom:15px;
+}
+
+.upload-content h4{
+
+    margin-bottom:8px;
+
+    color:#1e293b;
+
+    font-size:20px;
+}
+
+.upload-content span{
+
+    display:block;
+
+    color:#64748b;
+
+    margin-bottom:10px;
+}
+
+.upload-content small{
+
+    color:#94a3b8;
+}
+
+/* STATUS */
+
+.upload-status{
+
+    margin-top:20px;
+
+    padding:14px 18px;
+
+    border-radius:12px;
+
+    font-weight:600;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+}
+
+.loading{
+
+    background:#eff6ff;
+
+    color:#2563eb;
+}
+
+.success{
+
+    background:#dcfce7;
+
+    color:#15803d;
+}
+
+.error{
+
+    background:#fee2e2;
+
+    color:#dc2626;
+}
+
+/* LOADER */
+
+.loader{
+
+    width:18px;
+
+    height:18px;
+
+    border:3px solid rgba(37,99,235,.2);
+
+    border-top-color:#2563eb;
+
+    border-radius:50%;
+
+    animation:spin .8s linear infinite;
+}
+
+@keyframes spin{
+
+    to{
+
+        transform:rotate(360deg);
+
+    }
+
 }

@@ -14,7 +14,7 @@ $data = json_decode($json, true);
 
 // Make sure filiere was actually sent
 if (!isset($data['filiere'])) {
-    echo json_encode(["error" => "No filiere provided"]);
+    echo json_encode(["error" => "No filiere provided" ,"data" => $data]);
     exit;
 }
 

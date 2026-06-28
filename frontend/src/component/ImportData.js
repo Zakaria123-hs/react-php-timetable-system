@@ -156,12 +156,74 @@ function ImportData() {
     };
 
     return (
-        <div style={{ padding: '20px', backgroundColor: 'white', borderRadius: '12px', marginTop: '20px', border: '1px solid #e2e8f0' }}>
-            <h3 style={{ margin: '0 0 10px 0', color: '#1e293b' }}>Import Répartition (Group-Teacher Link)</h3>
-            <input type="file" accept=".xlsx, .xls" onChange={handleFileUpload} disabled={loading} style={{ marginBottom: '15px' }} />
-            {loading && <p style={{ color: '#2563eb', fontWeight: 'bold' }}>⏳ Processing relationship data...</p>}
-            {message && <p style={{ fontWeight: 'bold', color: message.includes("Error") || message.includes("❌") ? "#dc2626" : "#16a34a" }}>{message}</p>}
+        <div className="upload-card">
+
+    <div className="upload-header">
+        <div className="upload-icon">
+            📄
         </div>
+
+        <div>
+            <h3>Import Répartition</h3>
+            <p>
+                Importez un fichier Excel contenant les relations
+                Groupe - Formateur.
+            </p>
+        </div>
+    </div>
+
+    <label className="upload-area">
+
+        <input
+            type="file"
+            accept=".xlsx,.xls"
+            onChange={handleFileUpload}
+            disabled={loading}
+        />
+
+        <div className="upload-content">
+
+            <div className="upload-cloud">
+                ☁️
+            </div>
+
+            <h4>
+                Choisir un fichier Excel
+            </h4>
+
+            <span>
+                ou glissez votre fichier ici
+            </span>
+
+            <small>
+                Formats acceptés : .xlsx • .xls
+            </small>
+
+        </div>
+
+    </label>
+
+    {loading && (
+        <div className="upload-status loading">
+            <span className="loader"></span>
+            Processing relationship data...
+        </div>
+    )}
+
+    {message && (
+        <div
+            className={`upload-status ${
+                message.includes("Error") ||
+                message.includes("❌")
+                    ? "error"
+                    : "success"
+            }`}
+        >
+            {message}
+        </div>
+    )}
+
+</div>
     );
 }
 
